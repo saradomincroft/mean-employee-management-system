@@ -44,3 +44,23 @@ employeeRouter.post("/", async (requestAnimationFrame, res) => {
             res.status(400).send(error instanceof Error ? error.message : "Unknown error");
     }
 });
+
+employeeRouter.put("/:id", async (req, res) => {
+    try {
+        const id = req?.params?.id;
+        const employee = req.body;
+        const query = { _id: new ObjectId(id) };
+        const result = await collections?.employees?.updateOne(query, { $set: employee });
+        if (result && result.matchedCount) {
+            res.status(200).send(`Updated and employee: ID ${id}.`);
+        } else if (!result?.matchedCount) {
+            res.status(404).send(`Failed to find an employee: ID ${id}`);
+        } else {
+            res.status(404).send(`Failed to update an employee: ID ${id}`);
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        console.error(message);
+        res.status(400).send(message);
+    }
+});
